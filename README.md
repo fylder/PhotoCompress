@@ -9,8 +9,8 @@
  ImageCompress.compress(this, oldFile)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
-                    mImageNew.setImageBitmap(BitmapFactory.decodeFile(s.getAbsolutePath()));
-                    mTextNew.setText(String.format("Size : %s", getReadableFileSize(s.length())));
+                    //压缩照片
+
                 }, r -> Log.w("photo", r.getMessage()));
 ```
 
@@ -20,8 +20,8 @@
  ImageCompress.compressLuban(this, oldFile)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
-                    mImageLuban.setImageBitmap(BitmapFactory.decodeFile(s.getAbsolutePath()));
-                    mTextLuban.setText(String.format("Size : %s", getReadableFileSize(s.length())));
+                    //压缩照片
+
                 }, r -> Log.w("photo", r.getMessage()));
 ```
 
