@@ -94,6 +94,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView">
@@ -122,7 +123,7 @@
                 <ImageView
                     android:id="@+id/main_image_luban"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="180dp"
                     android:background="@color/colorPrimary"
                     android:scaleType="centerCrop" />
 
@@ -147,12 +148,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="尺寸压缩" />
+                    android:text="最大尺寸压缩" />
 
                 <ImageView
                     android:id="@+id/main_image_new"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="180dp"
                     android:background="@color/colorAccent"
                     android:scaleType="centerCrop" />
 
