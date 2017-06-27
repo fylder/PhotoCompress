@@ -2,12 +2,11 @@ package fylder.compress.demo;
 
 import android.Manifest;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,10 +21,9 @@ import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import fylder.compress.library.CompressHelper;
+import fylder.compress.library.ImageCompress;
 import fylder.compress.library.tools.FileUtil;
-import top.zibin.luban.Luban;
-import top.zibin.luban.OnCompressListener;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,12 +55,10 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
     }
 
-
     public void compress(View view) {
 
         RxPermissions rxPermissions = new RxPermissions(this);
-        rxPermissions
-                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .subscribe(granted -> {
                     if (granted) { // Always true pre-M
                         compressOne();
@@ -70,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         // Oups permission denied
                     }
-                });
+                }, throwable -> Log.e("photo", throwable.getMessage()));
     }
 
     /**
@@ -79,48 +75,61 @@ public class MainActivity extends AppCompatActivity {
     void compressOne() {
         // 默认的压缩方法，多张图片只需要直接加入循环即可
 //        newFile = CompressHelper.getDefault(getApplicationContext()).compressToFile(oldFile);
+        ImageCompress.compress(this, oldFile)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    mImageNew.setImageBitmap(BitmapFactory.decodeFile(s.getAbsolutePath()));
+                    mTextNew.setText(String.format("Size : %s", getReadableFileSize(s.length())));
+                }, r -> Log.w("photo", r.getMessage()));
 
-
-        String yourFileName = "123.jpg";
-
-        // 你也可以自定义压缩
-        newFile = new CompressHelper.Builder(this)
-                .setMaxWidth(1600)  // 默认最大宽度为720
-                .setMaxHeight(1600) // 默认最大高度为960
-                .setQuality(80)    // 默认压缩质量为80
-                .setCompressFormat(Bitmap.CompressFormat.JPEG) // 设置默认压缩为jpg格式
-                .setFileName(yourFileName) // 设置你的文件名
-                .setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath())
-                .build()
-                .compressToFile(oldFile);
-
-
-        mImageNew.setImageBitmap(BitmapFactory.decodeFile(newFile.getAbsolutePath()));
-        mTextNew.setText(String.format("Size : %s", getReadableFileSize(newFile.length())));
+//        String yourFileName = "123.jpg";
+//
+//        // 你也可以自定义压缩
+//        newFile = new CompressHelper.Builder(this)
+//                .setMaxWidth(1600)  // 默认最大宽度为720
+//                .setMaxHeight(1600) // 默认最大高度为960
+//                .setQuality(80)    // 默认压缩质量为80
+//                .setCompressFormat(Bitmap.CompressFormat.JPEG) // 设置默认压缩为jpg格式
+//                .setFileName(yourFileName) // 设置你的文件名
+//                .setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath())
+//                .build()
+//                .compressToFile(oldFile);
+//
+//
+//        mImageNew.setImageBitmap(BitmapFactory.decodeFile(newFile.getAbsolutePath()));
+//        mTextNew.setText(String.format("Size : %s", getReadableFileSize(newFile.length())));
     }
 
     void compressTwo() {
-        Luban.with(this)
-                .load(oldFile)  //传人要压缩的图片
-                .setCompressListener(new OnCompressListener() {
-                    //设置回调
-                    @Override
-                    public void onStart() {
-                        // TODO 压缩开始前调用，可以在方法内启动 loading UI
-                    }
 
-                    @Override
-                    public void onSuccess(File file) {
-                        // TODO 压缩成功后调用，返回压缩后的图片文件
-                        mImageLuban.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
-                        mTextLuban.setText(String.format("Size : %s", getReadableFileSize(file.length())));
-                    }
+        ImageCompress.compressLuban(this, oldFile)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    mImageLuban.setImageBitmap(BitmapFactory.decodeFile(s.getAbsolutePath()));
+                    mTextLuban.setText(String.format("Size : %s", getReadableFileSize(s.length())));
+                }, r -> Log.w("photo", r.getMessage()));
 
-                    @Override
-                    public void onError(Throwable e) {
-                        // TODO 当压缩过程出现问题时调用
-                    }
-                }).launch();    //启动压缩
+//        Luban.with(this)
+//                .load(oldFile)  //传人要压缩的图片
+//                .setCompressListener(new OnCompressListener() {
+//                    //设置回调
+//                    @Override
+//                    public void onStart() {
+//                        // TODO 压缩开始前调用，可以在方法内启动 loading UI
+//                    }
+//
+//                    @Override
+//                    public void onSuccess(File file) {
+//                        // TODO 压缩成功后调用，返回压缩后的图片文件
+//                        mImageLuban.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+//                        mTextLuban.setText(String.format("Size : %s", getReadableFileSize(file.length())));
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        // TODO 当压缩过程出现问题时调用
+//                    }
+//                }).launch();    //启动压缩
 
     }
 
