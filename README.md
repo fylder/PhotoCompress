@@ -2,6 +2,29 @@
 
 根据限制尺寸大小压缩，并调整压缩质量
 
+
+##### 限制最大尺寸
+
+```java
+ ImageCompress.compress(this, oldFile)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    mImageNew.setImageBitmap(BitmapFactory.decodeFile(s.getAbsolutePath()));
+                    mTextNew.setText(String.format("Size : %s", getReadableFileSize(s.length())));
+                }, r -> Log.w("photo", r.getMessage()));
+```
+
+##### Luban
+
+```java
+ ImageCompress.compressLuban(this, oldFile)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    mImageLuban.setImageBitmap(BitmapFactory.decodeFile(s.getAbsolutePath()));
+                    mTextLuban.setText(String.format("Size : %s", getReadableFileSize(s.length())));
+                }, r -> Log.w("photo", r.getMessage()));
+```
+
 [CompressHelper](https://github.com/nanchen2251/CompressHelper)
 
 ##### 限制最大尺寸
@@ -16,7 +39,8 @@
                 .setQuality(80)    // 默认压缩质量为80
                 .setCompressFormat(Bitmap.CompressFormat.JPEG) // 设置默认压缩为jpg格式
                 .setFileName(yourFileName) // 设置你的文件名
-                .setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath())
+                .setDestinationDirectoryPath(Environment.
+                getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath())
                 .build()
                 .compressToFile(oldFile);
 ```
